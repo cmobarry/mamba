@@ -10,7 +10,6 @@ from einops import rearrange, repeat
 
 #TODO from mamba_ssm.ops.triton.ssd_combined import mamba_chunk_scan_combined
 
-
 def segsum_unstable(x):
     """Naive segment sum calculation."""
     T = x.size(-1)
@@ -74,7 +73,7 @@ def ssd_minimal_discrete(X, A, B, C, block_len, initial_states=None):
     Y_off = torch.einsum('bclhn,bchpn,bhcl->bclhp', C, states, state_decay_out)
 
     # Add output of intra-chunk and inter-chunk terms (diagonal and off-diagonal blocks)
-    Y = rearrange(Y_diag+Y_off, "b c l h p -> b (c l) h p")
+    Y = rearrange(Y_diag + Y_off, "b c l h p -> b (c l) h p")
     return Y, final_state
 
 
@@ -90,7 +89,7 @@ def test_correctness():
     dstate = 64  # (N) in the paper
     dtype = torch.float32
     device = "cuda"
-    device ='cpu'
+    device = 'cpu'
 
     x = torch.randn(batch, seqlen, nheads, headdim, dtype=dtype, device=device)
     dt = F.softplus(torch.randn(batch, seqlen, nheads, dtype=torch.float32, device=device) - 4).requires_grad_()
